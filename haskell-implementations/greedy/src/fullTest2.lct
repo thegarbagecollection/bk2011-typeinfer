@@ -1,0 +1,21 @@
+#MULTI
+#TEST
+
+let x=(succ 0);
+    y=(succ (succ 0)) 
+in {x,y}
+
+#EXPECTED
+S: {Nat,Nat}
+
+#END
+
+#TEST
+\xs:List(V).\ys:List(Nat).
+  let id=(\x:U.x);
+      map=(fix (\map:(T->T)->List(T)->List(T).\f:T->T.\xs:List(T).cons (f (head xs)) (map f (tail xs)))) 
+  in {map id xs,map id ys}
+#EXPECTED
+S: List(T)->List(Nat)->{List(T),List(Nat)}
+
+#END

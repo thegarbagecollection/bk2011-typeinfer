@@ -1,0 +1,10 @@
+Second batch:
+component mean and std dev wrong - was including the -1s
+
+First batch:
+above, plus
+adding 1 to all component counts (initialised with 1 rather than 0)
+
+
+
+

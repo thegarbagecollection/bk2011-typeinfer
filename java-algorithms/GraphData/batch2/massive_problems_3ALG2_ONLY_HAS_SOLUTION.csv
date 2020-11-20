@@ -1,0 +1,7 @@
+Massive Problems 3 (Alg2 only) (problems with solution only, ALG2_ONLY)
+VariableCount,ConstraintCount,MaxSummand
+200000,150000,50
+ExecTimeAlg2,GVertexCount,GEdgeCount,HVertexCount,HEdgeCount,RVertexCount,REdgeCount,VertexIncrementsAlg2,MaxComponentSize,MeanComponentSize,AllComponentSizes
+155013310603,521938,1000697,506899,965909,140290,275248,140290,1,1,[1=140290]
+164099949181,521679,999524,506548,964657,140303,275171,140303,2,1,[1=140301/2=1]
+157035122894,522055,999106,507067,964458,140655,275666,140655,1,1,[1=140655]

@@ -1,0 +1,6 @@
+b3t5
+#CONSTRAINTS#
+X8,-3<X4,-7
+#SOLUTION#
+X8,3
+X4,7

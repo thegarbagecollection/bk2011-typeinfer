@@ -1,0 +1,202 @@
+#SINGLE
+
+(\x:Bool.x)
+S: Bool->Bool
+
+
+(\x:Bool.\y:Nat.x)
+S: Bool->Nat->Bool
+
+(\x:Bool.\y:Nat.y)
+S: Bool->Nat->Nat
+
+
+-- addition
+fix (\add:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then y else (add (pred x) (succ y)))
+S: Nat->Nat->Nat
+
+-- Macro for add
+%add=fix (\add:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then y else (add (pred x) (succ y)))
+$add$
+S: Nat->Nat->Nat
+
+-- sum from 1 to n
+-- fix (\sum:Nat->Nat.\n:Nat.if (iszero n) then 0 else (add n (sum (pred n))))
+-- it'd be useful to have a let-binding here!!
+fix (\sum:Nat->Nat.\n:Nat.if (iszero n) then 0 else ((fix (\add:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then y else (add (pred x) (succ y)))) n (sum (pred n))))
+S: Nat->Nat
+
+-- sum defined with add-macro
+fix (\sum:Nat->Nat.\n:Nat.if (iszero n) then 0 else ($add$ n (sum (pred n))))
+S: Nat->Nat
+
+-- fibonacci
+-- let would also be nice here...
+-- fix (\fib:Nat->Nat.\n:Nat.if (iszero n) then (succ n) else (if (iszero (pred n)) then n else (add (fib (pred n)) (fib (pred (pred n))))))
+fix (\fib:Nat->Nat.\n:Nat.if (iszero n) then (succ n) else (if (iszero (pred n)) then n else ((fix (\add:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then y else (add (pred x) (succ y)))) (fib (pred n)) (fib (pred (pred n))))))
+
+S: Nat->Nat
+
+-- fib defined with add-macro
+fix (\fib:Nat->Nat.\n:Nat.if (iszero n) then (succ n) else (if (iszero (pred n)) then n else ($add$ (fib (pred n)) (fib (pred (pred n))))))
+
+S: Nat->Nat
+
+
+
+
+%id=\x:T.x
+
+$id$
+S: T->T
+
+(\x:T->T.\y:T.x y) $id$
+S: T->T
+
+(\x:T->T.\y:T.x y) $id$ 0
+S: Nat
+
+
+
+-- and let's define multiplication and hence factorial, then we've covered the basic "recursive function tutorial"
+
+%mult=fix (\mult:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then 0 else ($add$ y (mult (pred x) y)))
+
+$mult$
+S: Nat->Nat->Nat
+
+
+fix (\mult:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then 0 else ((fix (\add:Nat->Nat->Nat.\x:Nat.\y:Nat.if (iszero x) then y else (add (pred x) (succ y)))) y (mult (pred x) y)))
+S: Nat->Nat->Nat
+
+-- We're getting an error on this - think it might be too zealous in removing variables post-abstraction?
+\x:Nat.(\x:Nat.succ x) x
+S: Nat->Nat
+-- (\x:TypeConstantLookup "Nat".(\x:TypeConstantLookup "Nat".succ x) x)
+-- (\x1:Nat.(\x2:Nat.succ x2) x2)
+-- Problem found. WHOOPS!! Not "removal", the opposite!
+-- Fixed.
+
+-- what about this?
+\x:Nat.(\y:Nat.succ y) x
+S: Nat->Nat
+-- fine
+
+---------------------------------------------------------------------------------------------
+
+-- Better test some of the more complex structures. How about "if"?
+-- Later note: oh god
+\x:T.\y:T.\z:Bool.if z then x else y
+S: T->T->Bool->T
+
+\x:T->T.\y:T->T.\z:Bool.if z then x else y
+S: (T->T)->(T->T)->Bool->T->T
+
+
+-- This succeeds: it infers that T=U
+\x:T.\y:U.\z:Bool.if z then x else y
+S: T->T->Bool->T
+
+-- What about this one?? Should probably accept this one - the general type of both the lambdas is a->a.
+-- Key point here though - neither type variable is bound within the outer lambda.
+\x:Nat.if (iszero x) then (\x:T.x) else (\y:T.y)
+S: Nat->T->T
+
+-- Same here - this should be fine
+\x:Nat.if (iszero x) then (\x:T.x) else (\y:U.y)
+S: Nat->T->T
+
+
+-- This should be fine - the T is bound by y.
+\x:Nat.\y:T.if (iszero x) then (\x:T.x) else (\y:T.y)
+S: Nat->T->T->T
+
+
+-- Succeeds with T=U so T->T = U->U
+\x:T->T.\y:U->U.\z:Bool.if z then x else y
+S: (T->T)->(T->T)->Bool->T->T
+
+
+-- Succeeds: infers that U->U=T->T
+\x:T->T.\z:Bool.if z then x else (\y:U.y)
+S: (T->T)->Bool->T->T
+
+
+-- This should succeed though, since T is bound in x, so the else lambda has type T->T
+\x:T->T.\z:Bool.if z then x else (\y:T.y)
+S: (T->T)->Bool->T->T
+
+
+-------------------------------------------------------------------------------------------
+-- Leaving if alone for now, let's typecheck some of the other structures.
+
+--------------------------------------------------------------------------------------------
+-- Tuples
+\x:{Nat,Nat,Nat}.x.1(3)
+S: {Nat,Nat,Nat}->Nat
+
+
+\x:{Nat,T,U}.x.2(3)
+S: {Nat,T,U}->T
+
+(\x:{Nat,T,U}.x.2(3)) {0,true,0}
+S: Bool
+
+
+
+----------------------------------------------------------------------------------------
+-- Abstractions
+
+\x:T->T.x
+S: (T->T)->T->T
+
+\x:T->T.\y:T.x
+S: (T->T)->T->T->T
+
+\x:T->T.(\y:T->T.y) x
+S: (T->T)->T->T
+
+\x:T->T.(\y:U->T.y) x
+S: (T->T)->T->T
+
+-- Succeeds: x must be a function Nat->Nat since it takes a Nat and is T->T, so T=Nat
+\x:T->T.x 0
+S: (Nat->Nat)->Nat
+
+\x:T->T.\y:T.x y
+S: (T->T)->T->T
+
+(\x:T.x) 0
+S: Nat
+
+(\x:T->T.x) (\y:U.y) 0
+S: Nat
+
+
+-- the map function on infinite lists (for lazy evaluation only!)
+fix (\map:(T->T)->List(T)->List(T).\f:T->T.\xs:List(T).cons (f (head xs)) (map f (tail xs)))
+S: (T->T)->List(T)->List(T)
+
+%map=fix (\map:(T->T)->List(T)->List(T).\f:T->T.\xs:List(T).cons (f (head xs)) (map f (tail xs)))
+
+$map$
+S: (T->T)->List(T)->List(T)
+
+
+-- the filter function on infinite lists (lazy again!)
+fix (\filter:(T->Bool)->List(T)->List(T).\p:T->Bool.\xs:List(T).if (p (head xs)) then cons (head xs) (filter p (tail xs)) else (filter p (tail xs)))
+S: (T->Bool)->List(T)->List(T)
+
+
+
+---------------------------------------------------
+-- Testing out some weird stuff with map
+
+$map$ (\x:U.x)
+S: List(T)->List(T)
+
+-- we define our input as type U because the macro substitute will bind T in map
+\x:List(U).$map$ (\x:V.x) x
+S: List(T)->List(T)
+
+

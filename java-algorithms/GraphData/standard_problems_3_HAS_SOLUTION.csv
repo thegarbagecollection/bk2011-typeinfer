@@ -1,0 +1,5 @@
+Standard Problems 3 (problems with solution only)
+VariableCount,ConstraintCount,MaxSummand
+100,150,40
+ExecTimeAlg1,ExecTimeAlg2,GVertexCount,GEdgeCount,HVertexCount,HEdgeCount,RVertexCount,REdgeCount,VertexIncrementsAlg1,VertexIncrementsAlg2,MaxComponentSize,MeanComponentSize,AllComponentSizes
+1018424,1363945,427,1053,415,1021,81,216,1244,114,20,1,[1=62/20=2]

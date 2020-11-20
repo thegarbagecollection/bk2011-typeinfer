@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaSbtSettings">
+    <option name="customVMEnabled" value="true" />
+    <option name="customVMPath" value="E:/Java8/jdk1.8.0_152" />
+    <option name="maximumHeapSize" value="2048" />
+  </component>
+</project>

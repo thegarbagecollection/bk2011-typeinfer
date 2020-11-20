@@ -1,0 +1,5 @@
+Input:
+\x.x
+
+Result:
+?T1->?T1

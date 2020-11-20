@@ -1,0 +1,3 @@
+\x:Nat.x
+
+\x:Bool.\y:Nat->Bool->Nat.{x,y}

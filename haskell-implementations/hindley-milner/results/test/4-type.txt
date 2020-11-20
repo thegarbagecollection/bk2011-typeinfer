@@ -1,0 +1,5 @@
+Input:
+id id
+
+Result:
+?T2->?T2

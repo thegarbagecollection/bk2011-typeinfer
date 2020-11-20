@@ -1,0 +1,4 @@
+b2t1
+#CONSTRAINTS#
+X4,-9=X4,-3
+#SOLUTION#
